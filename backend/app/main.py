@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routes import projects, analysis, git, github
+from app.routes import projects, analysis, git, github, auth
 
 
 app = FastAPI(
@@ -20,6 +20,7 @@ app.add_middleware(
 )
 
 # Routes
+app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(projects.router, prefix="/api/project", tags=["project"])
 app.include_router(analysis.router, prefix="/api/project", tags=["analysis"])
 app.include_router(git.router, prefix="/api/git", tags=["git"])

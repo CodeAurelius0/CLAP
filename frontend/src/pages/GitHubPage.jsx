@@ -1,19 +1,17 @@
 /**
- * GitHubPage — GitHub authentication, repository creation, and push.
+ * GitHubPage — GitHub repository creation and push.
  *
- * Full workflow: Connect → Create Repo → Push → Success
+ * Full workflow: Authenticated → Create Repo → Push → Success
+ *
+ * Authentication is handled at the app level (ConnectGitHubPage).
+ * This page assumes the user is already authenticated.
  */
 import { useState, useEffect } from 'react';
 import * as api from '../services/api.js';
 import { isValidRepoName } from '../utils/helpers.js';
 
 export default function GitHubPage({ project, analysis, github, onNavigate }) {
-  const { authenticated, user, checkAuth, loginWithPAT, logout } = github;
-
-  // Auth state
-  const [patInput, setPATInput] = useState('');
-  const [authLoading, setAuthLoading] = useState(false);
-  const [authError, setAuthError] = useState(null);
+  const { authenticated, user, disconnect } = github;
 
   // Repo creation
   const [repoName, setRepoName] = useState('');
@@ -28,32 +26,12 @@ export default function GitHubPage({ project, analysis, github, onNavigate }) {
   const [pushError, setPushError] = useState(null);
   const [repoUrl, setRepoUrl] = useState('');
 
-  // Check auth on mount
-  useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
-
   // Pre-fill repo name from project
   useEffect(() => {
     if (project && !repoName) {
       setRepoName(project.name);
     }
   }, [project, repoName]);
-
-  // --- Auth with PAT ---
-  const handlePATLogin = async () => {
-    if (!patInput.trim()) return;
-    setAuthLoading(true);
-    setAuthError(null);
-    try {
-      await loginWithPAT(patInput.trim());
-      setPATInput('');
-    } catch (err) {
-      setAuthError(err.message);
-    } finally {
-      setAuthLoading(false);
-    }
-  };
 
   // --- Create repo and push ---
   const handleLaunch = async () => {
@@ -209,168 +187,122 @@ export default function GitHubPage({ project, analysis, github, onNavigate }) {
     <div className="page">
       <div className="page-header">
         <h1 className="page-title">GitHub</h1>
-        <p className="page-description">Connect, create a repository, and push your project.</p>
+        <p className="page-description">Create a repository and push your project.</p>
       </div>
 
-      {/* Auth Card */}
+      {/* Auth status indicator */}
       <div className="card">
-        <h2 className="card-title" style={{ marginBottom: 'var(--space-md)' }}>Authentication</h2>
-
-        {authenticated ? (
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-md">
-              {user?.avatar_url && (
-                <img
-                  src={user.avatar_url}
-                  alt={user.login}
-                  style={{ width: 32, height: 32, borderRadius: '50%' }}
-                />
-              )}
-              <div>
-                <div style={{ color: 'var(--success-fg)', fontWeight: 500 }}>
-                  ✓ Connected as @{user?.login}
-                </div>
-                {user?.name && <div className="text-sm text-muted">{user.name}</div>}
-              </div>
-            </div>
-            <button className="btn btn-ghost btn-sm" onClick={logout}>Disconnect</button>
-          </div>
-        ) : (
-          <>
-            <p className="text-muted mb-md">
-              Connect your GitHub account to create repositories and push your project.
-              Use a Personal Access Token with <code>repo</code> scope.
-            </p>
-
-            <div className="hint-block mb-md">
-              <div className="hint-block-title">How to create a token</div>
-              <div className="hint-block-text">
-                GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token.
-                Enable the <strong>repo</strong> scope. Copy the token and paste it below.
-              </div>
-            </div>
-
-            <div className="input-group">
-              <label className="input-label" htmlFor="pat-input">Personal Access Token</label>
-              <input
-                id="pat-input"
-                className="input-field"
-                type="password"
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                value={patInput}
-                onChange={(e) => setPATInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handlePATLogin()}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-md">
+            {user?.avatar_url && (
+              <img
+                src={user.avatar_url}
+                alt={user.login}
+                style={{ width: 32, height: 32, borderRadius: '50%' }}
               />
-            </div>
-
-            {authError && (
-              <div className="alert alert-error mb-md">{authError}</div>
             )}
-
-            <button
-              className="btn btn-primary"
-              onClick={handlePATLogin}
-              disabled={authLoading || !patInput.trim()}
-            >
-              {authLoading ? <><span className="spinner" /> Connecting…</> : 'Connect GitHub'}
-            </button>
-          </>
-        )}
+            <div>
+              <div style={{ color: 'var(--success-fg)', fontWeight: 500 }}>
+                ✓ Connected as @{user?.login}
+              </div>
+              {user?.name && <div className="text-sm text-muted">{user.name}</div>}
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Repo Creation — only when authenticated */}
-      {authenticated && (
-        <div className="card">
-          <h2 className="card-title" style={{ marginBottom: 'var(--space-md)' }}>Create Repository</h2>
+      {/* Repo Creation */}
+      <div className="card">
+        <h2 className="card-title" style={{ marginBottom: 'var(--space-md)' }}>Create Repository</h2>
 
-          <div className="input-group">
-            <label className="input-label" htmlFor="repo-name">Repository name</label>
-            <input
-              id="repo-name"
-              className="input-field"
-              type="text"
-              value={repoName}
-              onChange={(e) => setRepoName(e.target.value)}
-              placeholder="my-project"
-            />
-            {repoName && !isValidRepoName(repoName) && (
-              <div className="input-hint" style={{ color: 'var(--danger-fg)' }}>
-                Use only letters, numbers, hyphens, underscores, and dots.
-              </div>
-            )}
-          </div>
-
-          <div className="input-group">
-            <label className="input-label" htmlFor="repo-desc">Description</label>
-            <input
-              id="repo-desc"
-              className="input-field"
-              type="text"
-              value={repoDesc}
-              onChange={(e) => setRepoDesc(e.target.value)}
-              placeholder="A short description of your project"
-            />
-          </div>
-
-          <div className="input-group">
-            <label className="input-label">Visibility</label>
-            <div className="radio-group">
-              <label className="radio-option">
-                <input
-                  type="radio"
-                  name="visibility"
-                  checked={!isPrivate}
-                  onChange={() => setIsPrivate(false)}
-                />
-                Public
-              </label>
-              <label className="radio-option">
-                <input
-                  type="radio"
-                  name="visibility"
-                  checked={isPrivate}
-                  onChange={() => setIsPrivate(true)}
-                />
-                Private
-              </label>
-            </div>
-          </div>
-
-          {pushError && (
-            <div className="alert alert-error mb-md">{pushError}</div>
-          )}
-
-          {/* Push progress */}
-          {pushSteps.length > 0 && (
-            <div className="card" style={{ background: 'var(--bg-inset)', marginBottom: 'var(--space-md)' }}>
-              <div className="progress-steps">
-                {pushSteps.map((step, i) => (
-                  <div key={i} className={`progress-step ${step.status}`}>
-                    <span className="progress-step-icon">
-                      {step.status === 'active' ? <span className="spinner" /> :
-                       step.status === 'done' ? '✓' :
-                       step.status === 'error' ? '✕' : '○'}
-                    </span>
-                    {step.label}
-                  </div>
-                ))}
-              </div>
+        <div className="input-group">
+          <label className="input-label" htmlFor="repo-name">Repository name</label>
+          <input
+            id="repo-name"
+            className="input-field"
+            type="text"
+            value={repoName}
+            onChange={(e) => setRepoName(e.target.value)}
+            placeholder="my-project"
+          />
+          {repoName && !isValidRepoName(repoName) && (
+            <div className="input-hint" style={{ color: 'var(--danger-fg)' }}>
+              Use only letters, numbers, hyphens, underscores, and dots.
             </div>
           )}
-
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={handleLaunch}
-            disabled={pushing || !repoName.trim() || !isValidRepoName(repoName)}
-          >
-            {pushing ? (
-              <><span className="spinner" /> Launching…</>
-            ) : (
-              'Create Repository & Push'
-            )}
-          </button>
         </div>
-      )}
+
+        <div className="input-group">
+          <label className="input-label" htmlFor="repo-desc">Description</label>
+          <input
+            id="repo-desc"
+            className="input-field"
+            type="text"
+            value={repoDesc}
+            onChange={(e) => setRepoDesc(e.target.value)}
+            placeholder="A short description of your project"
+          />
+        </div>
+
+        <div className="input-group">
+          <label className="input-label">Visibility</label>
+          <div className="radio-group">
+            <label className="radio-option">
+              <input
+                type="radio"
+                name="visibility"
+                checked={!isPrivate}
+                onChange={() => setIsPrivate(false)}
+              />
+              Public
+            </label>
+            <label className="radio-option">
+              <input
+                type="radio"
+                name="visibility"
+                checked={isPrivate}
+                onChange={() => setIsPrivate(true)}
+              />
+              Private
+            </label>
+          </div>
+        </div>
+
+        {pushError && (
+          <div className="alert alert-error mb-md">{pushError}</div>
+        )}
+
+        {/* Push progress */}
+        {pushSteps.length > 0 && (
+          <div className="card" style={{ background: 'var(--bg-inset)', marginBottom: 'var(--space-md)' }}>
+            <div className="progress-steps">
+              {pushSteps.map((step, i) => (
+                <div key={i} className={`progress-step ${step.status}`}>
+                  <span className="progress-step-icon">
+                    {step.status === 'active' ? <span className="spinner" /> :
+                     step.status === 'done' ? '✓' :
+                     step.status === 'error' ? '✕' : '○'}
+                  </span>
+                  {step.label}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <button
+          className="btn btn-primary btn-lg"
+          onClick={handleLaunch}
+          disabled={pushing || !repoName.trim() || !isValidRepoName(repoName)}
+          id="create-repo-push"
+        >
+          {pushing ? (
+            <><span className="spinner" /> Launching…</>
+          ) : (
+            'Create Repository & Push'
+          )}
+        </button>
+      </div>
     </div>
   );
 }

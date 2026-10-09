@@ -1039,3 +1039,574 @@ input:focus, textarea:focus, select:focus {
 .gap-sm { gap: var(--space-sm); }
 .gap-md { gap: var(--space-md); }
 .w-full { width: 100%; }
+
+
+/* ===================================================================
+   Connect GitHub Page — First-run authentication
+   =================================================================== */
+
+.connect-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--space-xl);
+  animation: fadeIn 300ms ease;
+}
+
+.connect-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 420px;
+}
+
+/* --- Brand --- */
+.connect-brand {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.connect-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: var(--space-sm);
+}
+
+.connect-logo-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  font-size: 18px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+}
+
+.connect-logo-c {
+  background: var(--accent-muted);
+  color: var(--accent-fg);
+}
+.connect-logo-l {
+  background: var(--success-muted);
+  color: var(--success-fg);
+}
+.connect-logo-a {
+  background: var(--warning-muted);
+  color: var(--warning-fg);
+}
+.connect-logo-p {
+  background: var(--danger-muted);
+  color: var(--danger-fg);
+}
+
+.connect-tagline {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  letter-spacing: 0.5px;
+}
+
+/* --- Card --- */
+.connect-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  width: 100%;
+  position: relative;
+}
+
+.connect-card-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  text-align: center;
+}
+
+.connect-card-subtitle {
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
+/* --- Primary connect button --- */
+.connect-primary-btn {
+  justify-content: center;
+  gap: var(--space-sm);
+  font-size: var(--text-lg);
+  padding: 12px 24px;
+}
+
+.connect-browser-hint {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  text-align: center;
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+/* --- Advanced / PAT toggle --- */
+.connect-advanced {
+  border-top: 1px solid var(--border-muted);
+  padding-top: var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.connect-advanced-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-sm);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.connect-advanced-toggle:hover {
+  background: var(--neutral-muted);
+}
+
+.connect-advanced-label {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.connect-advanced-sub {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+/* --- Privacy note --- */
+.connect-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-md);
+}
+
+.connect-privacy-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.connect-privacy-title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.connect-privacy-text {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* --- Back button --- */
+.connect-back-btn {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+}
+
+/* --- PAT screen extras --- */
+.connect-pat-help {
+  text-align: center;
+  margin-top: var(--space-lg);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.connect-pat-help a {
+  color: var(--accent-fg);
+  font-size: var(--text-sm);
+}
+
+.connect-pat-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--warning-muted);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  color: var(--warning-fg);
+}
+
+.connect-pat-warning-icon {
+  flex-shrink: 0;
+}
+
+
+/* ===================================================================
+   Device Flow — Polling screen
+   =================================================================== */
+
+.connect-flow-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  width: 100%;
+  text-align: center;
+}
+
+.connect-flow-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  color: var(--accent-fg);
+  font-size: var(--text-md);
+  font-weight: 500;
+  margin-bottom: var(--space-lg);
+}
+
+.connect-flow-instruction {
+  font-size: var(--text-md);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.connect-user-code {
+  font-size: var(--text-hero);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 4px;
+  color: var(--text-primary);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  display: inline-block;
+  margin-bottom: var(--space-lg);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+  user-select: all;
+}
+
+.connect-user-code:hover {
+  border-color: var(--accent-fg);
+}
+
+.connect-flow-hint {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+
+.connect-cancel-btn {
+  margin-top: var(--space-md);
+}
+
+
+/* ===================================================================
+   GitHub Connected — Success screen
+   =================================================================== */
+
+.connected-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 300ms ease;
+}
+
+.connected-check {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--success-muted);
+  color: var(--success-fg);
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: var(--space-md);
+  animation: popIn 400ms ease;
+}
+
+.connected-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-lg);
+}
+
+.connected-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--border-default);
+  margin-bottom: var(--space-md);
+}
+
+.connected-username {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin-bottom: var(--space-xs);
+}
+
+.connected-email {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.connected-provider {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-xl);
+}
+
+
+/* ===================================================================
+   TopBar — GitHub indicator and panel
+   =================================================================== */
+
+.topbar-github {
+  position: relative;
+}
+
+.topbar-github-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  border: 1px solid transparent;
+}
+
+.topbar-github-btn:hover {
+  background: var(--neutral-muted);
+  border-color: var(--border-muted);
+}
+
+.topbar-github-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.topbar-github-label {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+}
+
+.topbar-github-provider {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.topbar-github-user {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.topbar-github-connect {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* --- Panel dropdown --- */
+.topbar-github-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  animation: panelSlideIn 150ms ease;
+  overflow: hidden;
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.topbar-github-panel-header {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.topbar-github-panel-title {
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.topbar-github-panel-body {
+  padding: var(--space-md);
+}
+
+.topbar-github-panel-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-sm);
+}
+
+.topbar-github-panel-link {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.topbar-github-panel-link:hover {
+  color: var(--accent-fg);
+}
+
+.topbar-github-panel-actions {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+/* --- Section 19 Error States & Connecting Sequence --- */
+.connect-status-sequence {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) 0;
+}
+
+.connect-manual-link-box {
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.connect-error-icon {
+  font-size: 36px;
+  margin-bottom: var(--space-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-surface-raised);
+  border: 1px solid var(--border-default);
+}
+
+.connect-actions-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+.connect-copied-hint {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--success-fg);
+  margin-top: -12px;
+  margin-bottom: var(--space-md);
+}
+
+/* Config notice banner */
+.connect-config-notice {
+  background: rgba(56, 139, 253, 0.1);
+  border: 1px solid rgba(56, 139, 253, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: left;
+}
+
+.connect-config-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--accent-fg);
+  margin-bottom: 4px;
+}
+
+.connect-config-desc {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.connect-config-desc code {
+  background: var(--bg-inset);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Section 10 PAT Validation Error Card */
+.connect-pat-error-card {
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  text-align: left;
+}
+
+.connect-pat-error-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--danger-fg);
+  margin-bottom: 6px;
+}
+
+.connect-pat-error-subtitle {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.connect-pat-error-list {
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+  padding-left: 18px;
+  margin: 0 0 var(--space-sm);
+  line-height: 1.6;
+}
+

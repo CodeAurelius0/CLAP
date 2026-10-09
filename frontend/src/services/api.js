@@ -74,14 +74,15 @@ export const addRemote = (path, url, name = 'origin') => post('/git/remote', { p
 export const pushToRemote = (path, remote = 'origin', branch = 'main') =>
   post('/git/push', { path, remote, branch });
 
-// GitHub Auth
-export const getAuthStatus = () => get('/github/auth/status');
-export const startDeviceFlow = () => post('/github/auth/device', {});
+// Auth — endpoints under /api/auth
+export const getAuthStatus = () => get('/auth/status');
+export const getAuthUser = () => get('/auth/user');
+export const startOAuthFlow = () => get('/auth/github/start?json=true');
+export const startDeviceFlow = () => post('/auth/github/start', {});
 export const pollDeviceFlow = (deviceCode) =>
-  post('/github/auth/device/poll', { device_code: deviceCode });
-export const authWithPAT = (token) => post('/github/auth/token', { token });
-export const githubLogout = () => post('/github/auth/logout', {});
-export const getGitHubUser = () => get('/github/user');
+  post('/auth/github/poll', { device_code: deviceCode });
+export const authWithPAT = (token) => post('/auth/token', { token });
+export const authDisconnect = () => post('/auth/disconnect', {});
 
 // GitHub Repo
 export const createRepository = (name, description, isPrivate) =>

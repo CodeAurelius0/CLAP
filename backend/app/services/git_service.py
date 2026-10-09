@@ -200,10 +200,19 @@ def add_remote(project_path: str, url: str, name: str = "origin") -> dict:
 
 
 def push(project_path: str, remote: str = "origin", branch: str = "main") -> dict:
-    """Push to the remote repository."""
-    resolved = os.path.abspath(project_path)
+    """Push to the remote repository using stored credentials."""
+    from app.services.github_auth import get_token
 
-    output = _run_git(resolved, ["push", "-u", remote, branch])
+    resolved = os.path.abspath(project_path)
+    token = get_token()
+
+    args = []
+    if token:
+        # Pass authorization header for GitHub HTTPS push without prompting or saving in local git config
+        args = ["-c", f"http.extraHeader=Authorization: Bearer {token}"]
+
+    args += ["push", "-u", remote, branch]
+    output = _run_git(resolved, args)
 
     return {
         "pushed": True,
@@ -213,12 +222,17 @@ def push(project_path: str, remote: str = "origin", branch: str = "main") -> dic
     }
 
 
-def _run_git(cwd: str, args: list[str]) -> str:
+def _run_git(cwd: str, args: list[str], env: Optional[dict] = None) -> str:
     """
     Run a git command safely with argument arrays.
     Returns stdout as string. Falls back to stderr for commands
     like `git push` that write progress to stderr.
     """
+    cmd_env = os.environ.copy()
+    cmd_env["GIT_TERMINAL_PROMPT"] = "0"
+    if env:
+        cmd_env.update(env)
+
     result = subprocess.run(
         ["git"] + args,
         cwd=cwd,
@@ -226,5 +240,6 @@ def _run_git(cwd: str, args: list[str]) -> str:
         text=True,
         check=True,
         timeout=120,
+        env=cmd_env,
     )
     return result.stdout or result.stderr
