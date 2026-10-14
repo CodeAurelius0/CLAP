@@ -106,13 +106,25 @@ def init_repo(project_path: str, branch: str = "main") -> dict:
     """Initialize a new Git repository."""
     resolved = os.path.abspath(project_path)
 
+    if not os.path.isdir(resolved):
+        raise ValueError(f"Path does not exist or is not a directory: {resolved}")
+
     if os.path.isdir(os.path.join(resolved, ".git")):
         raise ValueError("Git repository already initialized")
 
     if not is_git_installed():
         raise RuntimeError("Git is not installed or not available in PATH")
 
-    _run_git(resolved, ["init", "-b", branch])
+    # Try `git init -b <branch>` (requires Git >= 2.28)
+    try:
+        _run_git(resolved, ["init", "-b", branch])
+    except subprocess.CalledProcessError:
+        # Older Git: init without -b, then rename the default branch
+        _run_git(resolved, ["init"])
+        try:
+            _run_git(resolved, ["symbolic-ref", "HEAD", f"refs/heads/{branch}"])
+        except subprocess.CalledProcessError:
+            pass  # Non-critical — branch can be renamed later
 
     return {
         "initialized": True,

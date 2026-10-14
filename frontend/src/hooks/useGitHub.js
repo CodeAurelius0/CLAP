@@ -83,6 +83,10 @@ export function useGitHub() {
     const handleMessage = async (event) => {
       if (!event.data || typeof event.data !== 'object') return;
 
+      // Security: only accept messages from our own origin (popup was opened
+      // from our Vite dev server / production server)
+      if (event.origin !== window.location.origin) return;
+
       if (event.data.type === 'CLAP_AUTH_SUCCESS') {
         if (oauthPollRef.current) clearInterval(oauthPollRef.current);
         if (oauthTimeoutRef.current) clearTimeout(oauthTimeoutRef.current);

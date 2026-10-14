@@ -16,6 +16,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel
+import html as _html
 
 from app.config import settings
 from app.services.github_auth import (
@@ -136,6 +137,7 @@ async def oauth_callback(
                 title=title,
                 message=message,
                 redirect_url=f"{frontend_url}/?auth_error={'denied' if is_denied else 'failed'}",
+                target_origin=frontend_url,
                 error_code="denied" if is_denied else "error",
             ),
             status_code=200,
@@ -149,6 +151,7 @@ async def oauth_callback(
                 title="Invalid Authorization Response",
                 message="GitHub authorization response was incomplete. Please try again.",
                 redirect_url=f"{frontend_url}/?auth_error=incomplete",
+                target_origin=frontend_url,
                 error_code="incomplete",
             ),
             status_code=400,
@@ -165,6 +168,7 @@ async def oauth_callback(
                 title="GitHub Connected",
                 message=f"Connected as @{username}. You can return to CLAP now.",
                 redirect_url=f"{frontend_url}/?auth=success",
+                target_origin=frontend_url,
                 username=username,
             ),
             status_code=200,
@@ -176,6 +180,7 @@ async def oauth_callback(
                 title="Authorization Failed",
                 message=str(e),
                 redirect_url=f"{frontend_url}/?auth_error=exchange_failed",
+                target_origin=frontend_url,
                 error_code="exchange_failed",
             ),
             status_code=400,
@@ -187,10 +192,19 @@ def _render_auth_page(
     title: str,
     message: str,
     redirect_url: str,
+    target_origin: str = "*",
     username: str = "",
     error_code: str = "",
 ) -> str:
     """Helper to render a clean, self-closing callback response page."""
+    # HTML-escape dynamic values to prevent reflected XSS
+    safe_title = _html.escape(title)
+    safe_message = _html.escape(message)
+    safe_username = _html.escape(username)
+    safe_error_code = _html.escape(error_code)
+    # target_origin must be a URL — escape it for JS string context
+    safe_target_origin = _html.escape(target_origin, quote=True)
+
     icon = "✓" if success else "✕"
     icon_color = "#238636" if success else "#da3633"
     msg_type = "CLAP_AUTH_SUCCESS" if success else "CLAP_AUTH_ERROR"
@@ -200,7 +214,7 @@ def _render_auth_page(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CLAP — {title}</title>
+  <title>CLAP — {safe_title}</title>
   <style>
     body {{
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -264,8 +278,8 @@ def _render_auth_page(
 <body>
   <div class="card">
     <div class="icon">{icon}</div>
-    <h1>{title}</h1>
-    <p>{message}</p>
+    <h1>{safe_title}</h1>
+    <p>{safe_message}</p>
     <a href="{redirect_url}" class="btn">Return to CLAP</a>
   </div>
   <script>
@@ -275,9 +289,9 @@ def _render_auth_page(
         window.opener.postMessage({{
           type: '{msg_type}',
           success: {str(success).lower()},
-          username: '{username}',
-          errorCode: '{error_code}'
-        }}, '*');
+          username: '{safe_username}',
+          errorCode: '{safe_error_code}'
+        }}, '{safe_target_origin}');
         setTimeout(function() {{
           window.close();
         }}, 1200);
