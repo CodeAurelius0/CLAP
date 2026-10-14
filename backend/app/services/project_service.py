@@ -14,13 +14,23 @@ from analyzer import ProjectAnalyzer
 from analyzer.gitignore import generate_gitignore, merge_gitignore, read_existing_gitignore
 
 
+_BLOCKED_PATHS = {
+    "/", "/etc", "/usr", "/bin", "/sbin", "/lib", "/lib64", "/boot",
+    "/sys", "/proc", "/dev", "/root",
+}
+
+
 def validate_project_path(path: str) -> dict:
     """
-    Validate that the given path exists and is a directory.
+    Validate that the given path exists, is a directory, and is not a
+    restricted system path.
     Returns project info or raises ValueError.
     """
     # Normalise and resolve the path
     resolved = os.path.abspath(os.path.expanduser(path))
+
+    if resolved in _BLOCKED_PATHS:
+        raise ValueError(f"Access to this path is not allowed: {resolved}")
 
     if not os.path.exists(resolved):
         raise ValueError(f"Path does not exist: {resolved}")

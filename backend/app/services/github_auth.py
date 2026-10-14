@@ -139,14 +139,22 @@ def handle_oauth_callback(code: str, state: str) -> dict:
     if not settings.GITHUB_CLIENT_ID:
         raise ValueError("GitHub Client ID is not configured.")
 
-    payload = {
+    # Build the token-exchange payload.
+    # GitHub's server-side (confidential) flow uses client_secret.
+    # PKCE code_verifier applies to public clients only (no secret).
+    # Sending code_verifier alongside client_secret is non-standard;
+    # GitHub ignores it but we keep the code paths clean.
+    payload: dict = {
         "client_id": settings.GITHUB_CLIENT_ID,
         "code": code,
-        "code_verifier": session["code_verifier"],
         "redirect_uri": session["redirect_uri"],
     }
     if settings.GITHUB_CLIENT_SECRET:
+        # Confidential client: use client_secret (server-side web flow)
         payload["client_secret"] = settings.GITHUB_CLIENT_SECRET
+    else:
+        # Public client: use PKCE code_verifier
+        payload["code_verifier"] = session["code_verifier"]
 
     response = httpx.post(
         settings.GITHUB_ACCESS_TOKEN_URL,
