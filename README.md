@@ -121,6 +121,6 @@ The frontend runs on `http://localhost:5173` and proxies API requests to `http:/
 
 Contributions are welcome. Please open an issue before submitting a pull request for significant changes.
 
-## License
+# License
 
 [MIT](LICENSE)
